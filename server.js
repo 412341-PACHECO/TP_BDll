@@ -1,36 +1,38 @@
-const express = require("express");
-const cors = require("cors");
-const { MongoClient } = require("mongodb");
-const reportesRouter = require("./reportes");
-
+const express = require('express');
 const app = express();
-const PORT = 3000;
-const uri = "mongodb://localhost:27017";
-const client = new MongoClient(uri);
+const port = 3000;
+const cors = require('cors');
 
-// Middleware
 app.use(cors());
 
-let db;
+// Simulación de datos ya procesados para los gráficos
+const dashboardData = {
+    jugadoresPodio: [
+        { nombre: "Ana", puntaje: 1500 },
+        { nombre: "Juan", puntaje: 1400 },
+        { nombre: "Lucia", puntaje: 1300 }
+    ],
+    partidasGanadas: [
+        { nombre: "Ana", ganadas: 20 },
+        { nombre: "Juan", ganadas: 18 },
+        { nombre: "Lucia", ganadas: 15 }
+    ],
+    eventosFrecuentes: [
+        { accion: "apostar", cantidad: 50 },
+        { accion: "abandono", cantidad: 10 },
+        { accion: "subir", cantidad: 30 }
+    ],
+    promedioPartidasPorMes: [
+        { mes: "2025-01", promedio: 5 },
+        { mes: "2025-02", promedio: 7 }
+    ]
+};
 
-// Conexión y enrutado
-client.connect().then(() => {
-    db = client.db("juego_online");
-    console.log("✅ Conectado a MongoDB");
+// Endpoint que devuelve los datos para el dashboard
+app.get('/reportes/dashboard', (req, res) => {
+    res.json(dashboardData);
+});
 
-    // Middleware para inyectar la DB en cada request
-    app.use((req, res, next) => {
-        req.db = db;
-        next();
-    });
-
-    // Usar las rutas unificadas
-    app.use("/", reportesRouter);
-
-    // Iniciar servidor
-    app.listen(PORT, () =>
-        console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`)
-    );
-}).catch(err => {
-    console.error("❌ Error conectando a MongoDB:", err);
+app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
 });

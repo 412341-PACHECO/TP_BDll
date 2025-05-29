@@ -9,11 +9,20 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "- Node.js\r - MongoDB local o MongoDB Atlas",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "mongodb": "^6.16.0",
     "mongoose": "^8.15.0"
-  }
+  },
+  "main": "models.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/412074-VittorioFaure/TP_BDll.git"
+  },
+  "bugs": {
+    "url": "https://github.com/412074-VittorioFaure/TP_BDll/issues"
+  },
+  "homepage": "https://github.com/412074-VittorioFaure/TP_BDll#readme"
 }

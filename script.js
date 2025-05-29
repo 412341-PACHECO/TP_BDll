@@ -1,86 +1,76 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const reportButtons = document.querySelectorAll(".report-button");
-    const output = document.getElementById("output");
-    const chartContainer = document.getElementById("chart-container");
+async function fetchDashboardData() {
+    try {
+        const res = await fetch('http://localhost:3000/reportes/dashboard');
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error('Error al obtener datos:', error);
+        return null;
+    }
+}
 
-    let chartInstance = null;
-
-    reportButtons.forEach((btn) => {
-        btn.addEventListener("click", async () => {
-            const reportId = btn.dataset.report;
-            try {
-                const res = await fetch(`http://localhost:3000/reportes/${reportId}`);
-                const data = await res.json();
-                output.innerHTML = generateTable(data);
-                generateChart(data, reportId);
-            } catch (error) {
-                output.innerHTML = "<p>Error al cargar el reporte</p>";
+function createBarChart(ctx, labels, data, label) {
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label,
+                data,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
             }
-        });
+        }
     });
+}
 
-    function generateTable(data) {
-        if (!data || typeof data !== "object") return "<p>No hay datos.</p>";
-
-        const isArray = Array.isArray(data);
-
-        if (isArray && data.length === 0) return "<p>No hay datos.</p>";
-
-        let rows = isArray ? data : [data];
-
-        const keys = Object.keys(rows[0]);
-        let table = "<table><thead><tr>";
-        keys.forEach((k) => (table += `<th>${k}</th>`));
-        table += "</tr></thead><tbody>";
-
-        rows.forEach((row) => {
-            table += "<tr>";
-            keys.forEach((k) => {
-                const val = typeof row[k] === "object" ? JSON.stringify(row[k]) : row[k];
-                table += `<td>${val}</td>`;
-            });
-            table += "</tr>";
-        });
-
-        table += "</tbody></table>";
-        return table;
+window.addEventListener('DOMContentLoaded', async () => {
+    const dashboardData = await fetchDashboardData();
+    if (!dashboardData) {
+        document.body.insertAdjacentHTML('beforeend', '<p>Error cargando los datos.</p>');
+        return;
     }
 
+    // Podio de jugadores (puntaje)
+    const podioCtx = document.getElementById('podioChart').getContext('2d');
+    createBarChart(
+        podioCtx,
+        dashboardData.jugadoresPodio.map(j => j.nombre),
+        dashboardData.jugadoresPodio.map(j => j.puntaje),
+        'Puntaje'
+    );
 
-    function generateChart(data, reportId) {
-        if (chartInstance) chartInstance.destroy();
+    // Partidas ganadas
+    const ganadasCtx = document.getElementById('ganadasChart').getContext('2d');
+    createBarChart(
+        ganadasCtx,
+        dashboardData.partidasGanadas.map(j => j.nombre),
+        dashboardData.partidasGanadas.map(j => j.ganadas),
+        'Partidas Ganadas'
+    );
 
-        if (!data || typeof data !== "object") return;
+    // Eventos más frecuentes
+    const eventosCtx = document.getElementById('eventosChart').getContext('2d');
+    createBarChart(
+        eventosCtx,
+        dashboardData.eventosFrecuentes.map(e => e.accion),
+        dashboardData.eventosFrecuentes.map(e => e.cantidad),
+        'Cantidad de Eventos'
+    );
 
-        const dataset = Array.isArray(data) ? data : [data];
-
-        const keys = Object.keys(dataset[0]);
-        const labels = dataset.map((d) => d[keys[0]]);
-        const values = dataset.map((d) => typeof d[keys[1]] === "number" ? d[keys[1]] : 0);
-
-        const ctx = document.getElementById("chart").getContext("2d");
-
-        chartInstance = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels,
-                datasets: [{
-                    label: keys[1],
-                    data: values,
-                    backgroundColor: "rgba(54, 162, 235, 0.6)",
-                    borderColor: "rgba(54, 162, 235, 1)",
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-
+    // Promedio de partidas por mes
+    const promedioCtx = document.getElementById('promedioChart').getContext('2d');
+    createBarChart(
+        promedioCtx,
+        dashboardData.promedioPartidasPorMes.map(p => p.mes),
+        dashboardData.promedioPartidasPorMes.map(p => p.promedio),
+        'Promedio de Partidas'
+    );
 });

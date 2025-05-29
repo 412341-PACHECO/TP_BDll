@@ -2,27 +2,44 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reportes NoSQL</title>
-  <link rel="stylesheet" href="index.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard TEG</title>
+  <link rel="stylesheet" href="index.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div class="container">
-  <h1>Panel de Reportes</h1>
 
-  <div class="buttons">
-    <button class="report-button" data-report="1">Reporte 1</button>
-    <button class="report-button" data-report="2">Reporte 2</button>
-    <button class="report-button" data-report="3">Reporte 3</button>
-    <button class="report-button" data-report="4">Reporte 4</button>
-    <button class="report-button" data-report="5">Reporte 5</button>
+<div class="container">
+  <h1>Estadisticas de juego de poker</h1>
+
+  <div class="cards">
+    <div class="card" id="totalJugadores">Jugadores Totales</div>
+    <div class="card" id="totalPartidas">Partidas Totales</div>
+    <div class="card" id="eventosTotales">Eventos Totales</div>
   </div>
 
-  <div id="output" class="table-container"></div>
+  <div class="charts">
+    <div class="chart-box">
+      <h2>Top Jugadores por Puntaje</h2>
+      <canvas id="podioChart"></canvas>
+    </div>
 
-  <div id="chart-container" style="max-width: 800px; margin: 40px auto;">
-    <canvas id="chart"></canvas>
+    <div class="chart-box">
+      <h2>Partidas por Mes</h2>
+      <canvas id="promedioChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Eventos más comunes</h2>
+      <canvas id="eventosChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Partidas Ganadas por Jugador</h2>
+      <canvas id="ganadasChart"></canvas>
+    </div>
+
+
   </div>
 </div>
 
